@@ -1,0 +1,53 @@
+GET http://127.0.0.1:8000/api/users/
+
+###
+
+POST http://127.0.0.1:8000/api/users/
+Content-Type: application/json
+
+{
+    "username": "test10",
+    "email": "test10@mail.ru",
+    "first_name": "test10",
+    "last_name": "testov10",
+    "password": "arbuz123"
+}
+
+###
+
+GET http://127.0.0.1:8000/api/users/1/
+Authorization: Token 49c51ede948b28d5e65bd47984659194c22bb210
+
+
+###
+
+GET http://127.0.0.1:8000/api/users/me/
+Authorization: Token f6005087d4807818f11a1d6401ccc85e1cc4f478
+
+###
+
+POST http://127.0.0.1:8000/api/users/set_password/
+Authorization: Token f6005087d4807818f11a1d6401ccc85e1cc4f478
+Content-Type: application/json
+
+{
+    "new_password": "arbuz123",
+    "current_password": "arbuz1234"
+}
+
+###
+
+POST http://127.0.0.1:8000/api/auth/token/login/
+Content-Type: application/json
+
+{
+    "email": "test@mail.ru",
+    "password": "arbuz123"
+}
+
+###
+
+POST http://127.0.0.1:8000/api/auth/token/logout/
+Authorization: Token 49c51ede948b28d5e65bd47984659194c22bb210
+
+###
