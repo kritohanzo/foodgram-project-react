@@ -12,7 +12,6 @@ from recipes.models import Ingredient, Tag, Recipe
 from django.shortcuts import get_object_or_404
 from api.serializers import IngredientSerializer, TagSerializer, FullRecipeSerializer, ShortRecipeSerializer, CreateUpdateRecipeSerializer
 from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import mixins
 
 from djoser import signals, utils

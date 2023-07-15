@@ -11,6 +11,7 @@ import json
 from djoser import utils
 from djoser.compat import get_user_email, get_user_email_field_name
 from djoser.conf import settings
+from extra.utils import create_ingredients
 
 class CustomDjoserUserSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
@@ -29,15 +30,37 @@ class CustomDjoserUserSerializer(serializers.ModelSerializer):
         return Subscribe.objects.filter(subscriber=request.user.id, author=obj).exists()
 
 
-class IngredientSerializer(ModelSerializer):
+class IngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ingredient
+        fields = ("id", "name", "measurement_unit")
+        read_only_fields = ("name", "measurement_unit")
+
+class CreateIngredientRecipe(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    amount = serializers.IntegerField()
+    
     class Meta:
         model = IngredientRecipe
-        fields = ("id", "name", "measurement_unit")
+        fields = ("id", "amount")
+
+class GetIngredientRecipe(serializers.ModelSerializer):
+    id = serializers.IntegerField(source="ingredient.id")
+    name = serializers.CharField(source="ingredient.name")
+    measurement_unit = serializers.CharField(source="ingredient.measurement_unit")
+    class Meta:
+        model = IngredientRecipe
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
 class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
         fields = ("id", "name", "color", "slug")
+
+class GetTagSerializer(ModelSerializer):
+    class Meta:
+        model = TagRecipe
+        fields = ("id", "name", "color")
 
 class Base64ToImageField(ImageField):
     def to_internal_value(self, data):
@@ -54,18 +77,43 @@ class ShortRecipeSerializer(ModelSerializer):
 class FullRecipeSerializer(ModelSerializer):
     image = Base64ToImageField()
     author = CustomDjoserUserSerializer(required=False)
+    tags = TagSerializer(many=True)
+    ingredients = GetIngredientRecipe(many=True, read_only=True, source='ingredients_recipes')
     class Meta:
         model = Recipe
         fields = ("id", "tags", "author", "ingredients", "name", "image", "text", "cooking_time")
         read_only_fields = ('author',)
 
 class CreateUpdateRecipeSerializer(ModelSerializer):
-    image = Base64ToImageField()
-    ingredients = IngredientSerializer(many=True)
-    tags = TagSerializer(many=True)
+    #image = Base64ToImageField()
+    ingredients = CreateIngredientRecipe(many=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True
+    )
+
     class Meta:
         model = Recipe
         fields = ("id", "tags", "ingredients", "name", "image", "text", "cooking_time")
+        read_only_fields = ('image',)
+
+    def create(self, validated_data):
+        print(validated_data)
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+        create_ingredients(ingredients, recipe)
+        return recipe
+    
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        return FullRecipeSerializer(
+            instance,
+            context={'request': request}
+        ).data
+
+        
 
 class SubscribeSerializer(ModelSerializer):
     email = serializers.ReadOnlyField(source="author.email")
@@ -95,10 +143,6 @@ class SubscribeSerializer(ModelSerializer):
     def get_recipes_count(self, obj):
         return len(self.get_recipes(obj))
     
-class IngredientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ingredient
-        fields = ("id", "name", "measurement_unit")
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:

@@ -21,6 +21,7 @@ services:
       - db
     volumes:
       - foodgram_static:/backend_static/
+      - foodgram_media:/app/media
       - ./data:/app/data
   frontend:
     build:
@@ -34,4 +35,5 @@ services:
       - "80:80"
     volumes:
       - foodgram_static:/usr/share/nginx/html/
+      - foodgram_media:/media
       - ./docs/:/usr/share/nginx/html/api/docs/

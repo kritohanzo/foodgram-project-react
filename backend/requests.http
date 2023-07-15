@@ -10,10 +10,10 @@ POST http://127.0.0.1:8000/api/users/
 Content-Type: application/json
 
 {
-    "username": "test2",
-    "email": "test2@mail.ru",
-    "first_name": "test2",
-    "last_name": "testov2",
+    "username": "test",
+    "email": "test@mail.ru",
+    "first_name": "test",
+    "last_name": "testov",
     "password": "arbuz123"
 }
 
@@ -45,7 +45,7 @@ POST http://127.0.0.1:8000/api/auth/token/login/
 Content-Type: application/json
 
 {
-    "email": "test2@mail.ru",
+    "email": "test@mail.ru",
     "password": "arbuz123"
 }
 
@@ -128,25 +128,39 @@ DELETE http://127.0.0.1:8000/api/ingredients/
 ### 
 
 GET http://127.0.0.1:8000/api/recipes/
-Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
+Authorization: token 9425f2189f67bd9d079fa1fddbad5da661dba830
 
 
 ###
 
 POST http://127.0.0.1:8000/api/recipes/
-Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
+Authorization: token 9425f2189f67bd9d079fa1fddbad5da661dba830
 Content-Type: application/json
 
 {
     "name": "кирилл под шубой",
     "text": "Жоский салат",
+    "tags": [
+        2,
+        3
+    ],
+    "ingredients": [
+        {
+            "id": 748,
+            "quantity": 20
+        },
+        {
+            "id": 753,
+            "quantity": 20
+        }
+    ],
     "cooking_time": 45
 }
 
 ###
 
-PUT http://127.0.0.1:8000/api/recipes/1/
-Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
+PUT http://127.0.0.1:8000/api/recipes/6/
+Authorization: token 9425f2189f67bd9d079fa1fddbad5da661dba830
 Content-Type: application/json
 
 {
@@ -158,7 +172,7 @@ Content-Type: application/json
 ###
 
 PATCH http://127.0.0.1:8000/api/recipes/1/
-Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
+Authorization: token 9425f2189f67bd9d079fa1fddbad5da661dba830
 Content-Type: application/json
 
 {
