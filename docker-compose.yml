@@ -1,17 +1,17 @@
 version: '3.3'
 
 volumes:
-  pg_data:
-  static:
-  media:
-  data:
+  foodgram_pg_data:
+  foodgram_static:
+  foodgram_media:
+  foodgram_data:
 
 services:
   db:
     image: postgres:13.10
     env_file: .env
     volumes:
-    - pg_data:/var/lib/postgresql/data
+    - foodgram_pg_data:/var/lib/postgresql/data
   backend:
     build:
       context: ./backend/.
@@ -20,18 +20,18 @@ services:
     depends_on:
       - db
     volumes:
-      - static:/backend_static/
+      - foodgram_static:/backend_static/
       - ./data:/app/data
   frontend:
     build:
       context: ./frontend/.
       dockerfile: Dockerfile
     volumes:
-      - static:/app/result_build/build
+      - foodgram_static:/app/result_build/build
   nginx:
     build: ./nginx/.
     ports:
       - "80:80"
     volumes:
-      - static:/usr/share/nginx/html/
+      - foodgram_static:/usr/share/nginx/html/
       - ./docs/:/usr/share/nginx/html/api/docs/

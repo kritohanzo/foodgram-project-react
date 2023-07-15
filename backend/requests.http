@@ -45,7 +45,7 @@ POST http://127.0.0.1:8000/api/auth/token/login/
 Content-Type: application/json
 
 {
-    "email": "test@mail.ru",
+    "email": "test2@mail.ru",
     "password": "arbuz123"
 }
 
@@ -59,17 +59,17 @@ Authorization: Token 29308ae9507e831c06183073a6aa00ecb1b3e1c8
 ### 
 
 GET http://127.0.0.1:8000/api/users/subscriptions/
-Authorization: Token 29308ae9507e831c06183073a6aa00ecb1b3e1c8
+Authorization: Token 2c208bf886d6422d50498d1b45146ebd74cee716
 
 ###
 
-POST http://127.0.0.1:8000/api/users/2/subscribe/
-Authorization: Token 29308ae9507e831c06183073a6aa00ecb1b3e1c8
+POST http://127.0.0.1:8000/api/users/1/subscribe/
+Authorization: Token 2c208bf886d6422d50498d1b45146ebd74cee716
 
 ###
 
-DELETE http://127.0.0.1:8000/api/users/2/subscribe/
-Authorization: Token 29308ae9507e831c06183073a6aa00ecb1b3e1c8
+DELETE http://127.0.0.1:8000/api/users/1/subscribe/
+Authorization: Token 2c208bf886d6422d50498d1b45146ebd74cee716
 
 ### 
 # ↓ TAGS SIDE REQUESTS ↓
@@ -101,7 +101,7 @@ DELETE http://127.0.0.1:8000/api/tags/
 # ↓ INGREDIENTS SIDE REQUESTS ↓
 ### 
 
-GET http://127.0.0.1:8000/api/ingredients/?name=абр
+GET http://127.0.0.1:8000/api/ingredients/?name=аб
 
 ### 
 
@@ -123,3 +123,46 @@ PATCH http://127.0.0.1:8000/api/ingredients/
 
 DELETE http://127.0.0.1:8000/api/ingredients/
 
+###
+# ↓ RECIPES SIDE REQUESTS ↓
+### 
+
+GET http://127.0.0.1:8000/api/recipes/
+Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
+
+
+###
+
+POST http://127.0.0.1:8000/api/recipes/
+Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
+Content-Type: application/json
+
+{
+    "name": "кирилл под шубой",
+    "text": "Жоский салат",
+    "cooking_time": 45
+}
+
+###
+
+PUT http://127.0.0.1:8000/api/recipes/1/
+Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
+Content-Type: application/json
+
+{
+    "name": "кирилл под шубой",
+    "text": "Жоский салат",
+    "cooking_time": 45
+}
+
+###
+
+PATCH http://127.0.0.1:8000/api/recipes/1/
+Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
+Content-Type: application/json
+
+{
+    "name": "кирилл под шубой",
+    "text": "Жоский салат",
+    "cooking_time": 45
+}

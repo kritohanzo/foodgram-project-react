@@ -10,8 +10,9 @@ from rest_framework.exceptions import NotFound
 from django.contrib.auth import update_session_auth_hash
 from recipes.models import Ingredient, Tag, Recipe
 from django.shortcuts import get_object_or_404
-from api.serializers import IngredientSerializer, TagSerializer, RecipeSerializer
+from api.serializers import IngredientSerializer, TagSerializer, FullRecipeSerializer, ShortRecipeSerializer, CreateUpdateRecipeSerializer
 from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import mixins
 
 from djoser import signals, utils
@@ -128,10 +129,19 @@ class TagViewSet(ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     pagination_class = None
 
-class RecipeViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
+class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+    serializer_class = ShortRecipeSerializer
     permission_classes = [AllowAny]
+    ModelViewSet.http_method_names.remove('put')
+
+    def get_serializer_class(self):
+        print(self.action)
+        if self.action == "create" or self.action == "partial_update":
+            return CreateUpdateRecipeSerializer
+        elif self.action == "list" or self.action == "retrieve":
+            return FullRecipeSerializer
+        return self.serializer_class
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

@@ -2,16 +2,23 @@ from django.db import models
 from users.models import User
 
 class Ingredient(models.Model):
-    name = models.CharField(verbose_name="Название", max_length=64, unique=True)
+    name = models.CharField(verbose_name="Название", max_length=64)
     measurement_unit = models.CharField(verbose_name="Единица измерения", max_length=16)
 
     class Meta:
         verbose_name_plural = "Ингредиенты"
         verbose_name = "Ингредиент"
         ordering = ("name",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "measurement_unit"], name="unique_name_measurement_unit"
+            )
+        ]
+
         
     def __str__(self):
         return self.name
+    
     
     
 
