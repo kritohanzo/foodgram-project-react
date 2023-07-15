@@ -1,0 +1,37 @@
+version: '3.3'
+
+volumes:
+  pg_data:
+  static:
+  media:
+  data:
+
+services:
+  db:
+    image: postgres:13.10
+    env_file: .env
+    volumes:
+    - pg_data:/var/lib/postgresql/data
+  backend:
+    build:
+      context: ./backend/.
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - db
+    volumes:
+      - static:/backend_static/
+      - ./data:/app/data
+  frontend:
+    build:
+      context: ./frontend/.
+      dockerfile: Dockerfile
+    volumes:
+      - static:/app/result_build/build
+  nginx:
+    build: ./nginx/.
+    ports:
+      - "80:80"
+    volumes:
+      - static:/usr/share/nginx/html/
+      - ./docs/:/usr/share/nginx/html/api/docs/

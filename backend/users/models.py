@@ -17,8 +17,8 @@ class User(AbstractUser):
     last_name = models.CharField(verbose_name="Фамилия", max_length=150)
     role = models.CharField(verbose_name="Роль", max_length=100, choices=RoleChoiser.choices(), default=RoleChoiser.USER.name)
 
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email", "first_name", "last_name"]
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
     @property
     def is_user(self):
@@ -40,3 +40,20 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+class Subscribe(models.Model):
+    subscriber = models.ForeignKey(verbose_name="Подписчик", to=User, on_delete=models.CASCADE, related_name='subscriptions_subscriber')
+    author = models.ForeignKey(verbose_name="Автор", to=User, on_delete=models.CASCADE, related_name='subscriptions_author')
+
+    class Meta:
+        verbose_name_plural = "Подписки"
+        verbose_name = "Подписка"
+        ordering = ("id",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["subscriber", "author"], name="unique_subscriber_author"
+            )
+        ]
+
+    def __call__(self):
+        return self

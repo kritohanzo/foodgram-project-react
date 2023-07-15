@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Острое",
+        "color": "#9c0202",
+        "slug": "spicy"
+    },
+    {
+        "name": "Сладкое",
+        "color": "#e632a4",
+        "slug": "sweety"
+    },
+    {
+        "name": "Кислое",
+        "color": "#d3eb3d",
+        "slug": "acid"
+    },
+    {
+        "name": "Соленое",
+        "color": "#cbf2ee",
+        "slug": "salty"
+    }
+]
