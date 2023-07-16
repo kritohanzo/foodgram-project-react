@@ -36,15 +36,8 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "measurement_unit")
         read_only_fields = ("name", "measurement_unit")
 
-class CreateIngredientRecipe(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    amount = serializers.IntegerField()
-    
-    class Meta:
-        model = IngredientRecipe
-        fields = ("id", "amount")
 
-class GetIngredientRecipe(serializers.ModelSerializer):
+class IngredientRecipeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source="ingredient.id")
     name = serializers.CharField(source="ingredient.name")
     measurement_unit = serializers.CharField(source="ingredient.measurement_unit")
@@ -57,11 +50,6 @@ class TagSerializer(ModelSerializer):
         model = Tag
         fields = ("id", "name", "color", "slug")
 
-class GetTagSerializer(ModelSerializer):
-    class Meta:
-        model = TagRecipe
-        fields = ("id", "name", "color")
-
 class Base64ToImageField(ImageField):
     def to_internal_value(self, data):
         format, img = data.split(';base64,')
@@ -69,6 +57,14 @@ class Base64ToImageField(ImageField):
         data = ContentFile(base64.b64decode(img), name='temp.' + ext)
         return super().to_internal_value(data)
     
+class CreateIngredientRecipe(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    amount = serializers.IntegerField()
+    
+    class Meta:
+        model = IngredientRecipe
+        fields = ("id", "amount")
+
 class ShortRecipeSerializer(ModelSerializer):
     class Meta:
         model = Recipe
@@ -78,7 +74,7 @@ class FullRecipeSerializer(ModelSerializer):
     image = Base64ToImageField()
     author = CustomDjoserUserSerializer(required=False)
     tags = TagSerializer(many=True)
-    ingredients = GetIngredientRecipe(many=True, read_only=True, source='ingredients_recipes')
+    ingredients = IngredientRecipeSerializer(many=True, read_only=True, source='ingredients_recipes')
     class Meta:
         model = Recipe
         fields = ("id", "tags", "author", "ingredients", "name", "image", "text", "cooking_time")
@@ -106,6 +102,15 @@ class CreateUpdateRecipeSerializer(ModelSerializer):
         create_ingredients(ingredients, recipe)
         return recipe
     
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        instance.tags.remove()
+        instance.tags.set(tags)
+        IngredientRecipe.objects.filter(recipe=instance).delete()
+        create_ingredients(ingredients, instance)
+        return instance
+    
     def to_representation(self, instance):
         request = self.context.get('request')
         return FullRecipeSerializer(
@@ -128,7 +133,6 @@ class SubscribeSerializer(ModelSerializer):
     class Meta:
         model = Subscribe
         fields = ("id", "username", "email", "first_name", "last_name", "is_subscribed", "recipes", "recipes_count")
-        #read_only_fields = ("recipes",)
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
@@ -142,9 +146,3 @@ class SubscribeSerializer(ModelSerializer):
     
     def get_recipes_count(self, obj):
         return len(self.get_recipes(obj))
-    
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ("id", "name", "color", "slug")

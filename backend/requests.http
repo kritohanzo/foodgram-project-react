@@ -128,13 +128,13 @@ DELETE http://127.0.0.1:8000/api/ingredients/
 ### 
 
 GET http://127.0.0.1:8000/api/recipes/
-Authorization: token 9425f2189f67bd9d079fa1fddbad5da661dba830
+Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
 
 
 ###
 
 POST http://127.0.0.1:8000/api/recipes/
-Authorization: token 9425f2189f67bd9d079fa1fddbad5da661dba830
+Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
 Content-Type: application/json
 
 {
@@ -147,11 +147,11 @@ Content-Type: application/json
     "ingredients": [
         {
             "id": 748,
-            "quantity": 20
+            "amount": 20
         },
         {
             "id": 753,
-            "quantity": 20
+            "amount": 20
         }
     ],
     "cooking_time": 45
@@ -160,7 +160,7 @@ Content-Type: application/json
 ###
 
 PUT http://127.0.0.1:8000/api/recipes/6/
-Authorization: token 9425f2189f67bd9d079fa1fddbad5da661dba830
+Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
 Content-Type: application/json
 
 {
@@ -171,12 +171,26 @@ Content-Type: application/json
 
 ###
 
-PATCH http://127.0.0.1:8000/api/recipes/1/
-Authorization: token 9425f2189f67bd9d079fa1fddbad5da661dba830
+PATCH http://127.0.0.1:8000/api/recipes/4/
+Authorization: token 00f0ada5463f7cc01569583c3549a3c832c5fa64
 Content-Type: application/json
 
 {
     "name": "кирилл под шубой",
     "text": "Жоский салат",
+    "tags": [
+        2,
+        3
+    ],
+    "ingredients": [
+        {
+            "id": 748,
+            "amount": 20
+        },
+        {
+            "id": 753,
+            "amount": 20
+        }
+    ],
     "cooking_time": 45
 }
