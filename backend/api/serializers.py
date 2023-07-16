@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, ImageField
 from rest_framework import serializers
-from recipes.models import Ingredient, Tag, Recipe, TagRecipe, IngredientRecipe
+from recipes.models import Ingredient, Tag, Recipe, TagRecipe, IngredientRecipe, ShoppingCart, Favorite
 from rest_framework.exceptions import ValidationError
 from users.models import User, Subscribe
 from django.core.files.base import ContentFile
@@ -27,6 +27,7 @@ class CustomDjoserUserSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
+        print(1)
         return Subscribe.objects.filter(subscriber=request.user.id, author=obj).exists()
 
 
@@ -75,13 +76,24 @@ class FullRecipeSerializer(ModelSerializer):
     author = CustomDjoserUserSerializer(required=False)
     tags = TagSerializer(many=True)
     ingredients = IngredientRecipeSerializer(many=True, read_only=True, source='ingredients_recipes')
+    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
+    is_favorited = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Recipe
-        fields = ("id", "tags", "author", "ingredients", "name", "image", "text", "cooking_time")
+        fields = ("id", "tags", "author", "ingredients", "name", "image", "text", "cooking_time", "is_in_shopping_cart", "is_favorited")
         read_only_fields = ('author',)
 
+    def get_is_in_shopping_cart(self, obj):
+        request = self.context.get('request')
+        return ShoppingCart.objects.filter(user=request.user, recipe=obj).exists()
+
+    def get_is_favorited(self, obj):
+        request = self.context.get('request')
+        return Favorite.objects.filter(user=request.user, recipe=obj).exists()
+
 class CreateUpdateRecipeSerializer(ModelSerializer):
-    #image = Base64ToImageField()
+    image = Base64ToImageField()
     ingredients = CreateIngredientRecipe(many=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
@@ -91,7 +103,6 @@ class CreateUpdateRecipeSerializer(ModelSerializer):
     class Meta:
         model = Recipe
         fields = ("id", "tags", "ingredients", "name", "image", "text", "cooking_time")
-        read_only_fields = ('image',)
 
     def create(self, validated_data):
         print(validated_data)

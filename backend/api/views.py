@@ -28,7 +28,7 @@ class CustomDjoserUserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, 
 
     def get_queryset(self):
         if self.action == "subscribe" or self.action == "subscriptions":
-            return Subscribe.objects.all()
+            return Subscribe.objects.filter(subscriber=self.request.user)
         return super().get_queryset()
 
     def get_permissions(self):
@@ -135,7 +135,26 @@ class RecipeViewSet(ModelViewSet):
     serializer_class = ShortRecipeSerializer
     permission_classes = [AllowAny]
     ModelViewSet.http_method_names.remove('put')
-
+    # filter_backends = [SearchFilter]
+    # search_fields = ['=is_in_shopping_cart', '=is_favorited', '=tags__slug']
+    
+    def get_queryset(self):
+        queryset = self.queryset
+        user = self.request.user
+        is_in_shopping_cart = self.request.query_params.get('is_in_shopping_cart')
+        is_favorited = self.request.query_params.get('is_favorited')
+        tags = self.request.query_params.getlist('tags')
+        author = self.request.query_params.get('author')
+        if is_in_shopping_cart:
+            queryset = queryset.filter(shoppingcarts__user=user)
+        if is_favorited:
+            queryset = queryset.filter(favorites__user=user)
+        if tags:
+            queryset = queryset.filter(tags__slug__in=tags).distinct()
+        if author:
+            queryset = queryset.filter(author=author)
+        return queryset
+    
     def get_serializer_class(self):
         print(self.action)
         if self.action == "create" or self.action == "partial_update":
@@ -205,6 +224,6 @@ class RecipeViewSet(ModelViewSet):
                     shopping_cart[key] = value
         print(shopping_cart)
         content = header + "\n".join([f"{igredient_name} - {amount_measurement_unit[0]} {amount_measurement_unit[1]}" for igredient_name, amount_measurement_unit in shopping_cart.items()])
-        response = HttpResponse(content, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename=Список покупок для пользователя {user}'
+        response = HttpResponse(content, content_type='text/plain; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="Shopping cart for {user}.txt"'
         return response       
