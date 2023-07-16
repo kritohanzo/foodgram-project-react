@@ -8,7 +8,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from api.permissions import DisallowAny
 from rest_framework.exceptions import NotFound
 from django.contrib.auth import update_session_auth_hash
-from recipes.models import Ingredient, Tag, Recipe
+from recipes.models import Ingredient, Tag, Recipe, Favorite, ShoppingCart, IngredientRecipe
 from django.shortcuts import get_object_or_404
 from api.serializers import IngredientSerializer, TagSerializer, FullRecipeSerializer, ShortRecipeSerializer, CreateUpdateRecipeSerializer
 from rest_framework.filters import SearchFilter
@@ -17,6 +17,8 @@ from rest_framework.viewsets import mixins
 from djoser import signals, utils
 from djoser.compat import get_user_email
 from djoser.conf import settings
+from django.shortcuts import HttpResponse
+from datetime import datetime
 
 class CustomDjoserUserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.CreateModelMixin, GenericViewSet):
     serializer_class = settings.SERIALIZERS.user
@@ -144,4 +146,65 @@ class RecipeViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-    
+
+    @action(["POST", "DELETE"], detail=False, url_path=r"(?P<id>\w+)/favorite")
+    def favorite(self, request, id):
+        user = request.user
+        recipe = Recipe.objects.get(id=id)
+        if request.method == "POST":
+            try:
+                Favorite.objects.create(user=user, recipe=recipe)
+            except:
+                return Response({"errors": "Рецепт уже в избранном"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                serializer = self.get_serializer(recipe)
+                return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        elif request.method == "DELETE":
+            favorite = Favorite.objects.filter(user=user, recipe=recipe)
+            if favorite.exists():
+                favorite.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"errors": "Такого рецепта нет в избранном"}, status=status.HTTP_400_BAD_REQUEST)
+            
+    @action(["POST", "DELETE"], detail=False, url_path=r"(?P<id>\w+)/shopping_cart")
+    def shopping_cart(self, request, id):
+        user = request.user
+        recipe = Recipe.objects.get(id=id)
+        if request.method == "POST":
+            try:
+                ShoppingCart.objects.create(user=user, recipe=recipe)
+            except:
+                return Response({"errors": "Рецепт уже в списке покупок"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                serializer = self.get_serializer(recipe)
+                return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        elif request.method == "DELETE":
+            shopping_cart = ShoppingCart.objects.filter(user=user, recipe=recipe)
+            if shopping_cart.exists():
+                shopping_cart.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"errors": "Такого рецепта нет в списке покупок"}, status=status.HTTP_400_BAD_REQUEST)
+            
+    @action(["GET"], detail=False)
+    def download_shopping_cart(self, request): 
+        user = request.user
+        queryset = ShoppingCart.objects.filter(user=user)
+        shopping_cart = dict()
+        header = 'СПАСИБО, ЧТО ПОЛЬЗУЕТЕСЬ НАШИМ САЙТОМ, ВОТ ВАШИ ИНГРЕДИЕНТЫ:\n\n'
+        for row_of_cart in queryset:
+            ingredients = IngredientRecipe.objects.filter(recipe=row_of_cart.recipe)
+            for row_of_ingredient_recipe in ingredients:
+                ingredient = Ingredient.objects.get(id=row_of_ingredient_recipe.ingredient.id)
+                key = ingredient.name
+                value = [row_of_ingredient_recipe.amount, ingredient.measurement_unit]
+                if ingredient.name in shopping_cart:
+                    shopping_cart[key][0] += row_of_ingredient_recipe.amount
+                else:
+                    shopping_cart[key] = value
+        print(shopping_cart)
+        content = header + "\n".join([f"{igredient_name} - {amount_measurement_unit[0]} {amount_measurement_unit[1]}" for igredient_name, amount_measurement_unit in shopping_cart.items()])
+        response = HttpResponse(content, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename=Список покупок для пользователя {user}'
+        return response       

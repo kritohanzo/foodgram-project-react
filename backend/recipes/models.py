@@ -57,6 +57,55 @@ class IngredientRecipe(models.Model):
     ingredient = models.ForeignKey(verbose_name="Ингредиент", to=Ingredient, on_delete=models.CASCADE, related_name="ingredients_recipes")
     amount = models.IntegerField(verbose_name="Количество")
 
+    class Meta:
+        verbose_name_plural = "Связи рецептов и ингредиентов"
+        verbose_name = "Связь рецепта и ингредиента"
+        ordering = ("id",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["recipe", "ingredient"], name="unique_recipe_ingredient"
+            )
+        ]
+
 class TagRecipe(models.Model):
     recipe = models.ForeignKey(verbose_name="Рецепт", to=Recipe, on_delete=models.CASCADE, related_name="tags_recipes")
     tag = models.ForeignKey(verbose_name="Тег", to=Tag, on_delete=models.CASCADE, related_name="tags_recipes")
+
+    class Meta:
+        verbose_name_plural = "Связи рецептов и тегов"
+        verbose_name = "Связь рецепта и тега"
+        ordering = ("id",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["recipe", "tag"], name="unique_recipe_tag"
+            )
+        ]
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(verbose_name="Пользователь", to=User, on_delete=models.CASCADE, related_name="favorites")
+    recipe = models.ForeignKey(verbose_name="Рецепт", to=Recipe, on_delete=models.CASCADE, related_name="favorites")
+
+    class Meta:
+        verbose_name_plural = "Списки избранного"
+        verbose_name = "Список избранного"
+        ordering = ("id",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "recipe"], name="unique_favorite_user_recipe"
+            )
+        ]
+
+class ShoppingCart(models.Model):
+    user = models.ForeignKey(verbose_name="Пользователь", to=User, on_delete=models.CASCADE, related_name="shoppingcarts")
+    recipe = models.ForeignKey(verbose_name="Рецепт", to=Recipe, on_delete=models.CASCADE, related_name="shoppingcarts")
+
+    class Meta:
+        verbose_name_plural = "Списки покупок"
+        verbose_name = "Список покупок"
+        ordering = ("id",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "recipe"], name="unique_shoppingcart_user_recipe"
+            )
+        ]
