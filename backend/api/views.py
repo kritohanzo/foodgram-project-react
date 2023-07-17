@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from users.models import User, Subscribe
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from api.permissions import DisallowAny
@@ -118,6 +118,19 @@ class CustomDjoserUserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, 
         serializer.is_valid(raise_exception=True)
         self.get_object = Subscribe.objects.filter(subscriber=request.user)
         return self.list(request, *args, **kwargs)
+
+class CustomDjoserTokenCreateView(utils.ActionViewMixin, generics.GenericAPIView):
+    """Use this endpoint to obtain user authentication token."""
+
+    serializer_class = settings.SERIALIZERS.token_create
+    permission_classes = settings.PERMISSIONS.token_create
+
+    def _action(self, serializer):
+        token = utils.login_user(self.request, serializer.user)
+        token_serializer_class = settings.SERIALIZERS.token
+        return Response(
+            data=token_serializer_class(token).data, status=status.HTTP_201_CREATED
+        )
 
 
 class TagViewSet(ReadOnlyModelViewSet):
