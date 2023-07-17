@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from api.serializers import IngredientSerializer, TagSerializer, FullRecipeSerializer, ShortRecipeSerializer, CreateUpdateRecipeSerializer
 from rest_framework.filters import SearchFilter
 from rest_framework.viewsets import mixins
+from rest_framework.exceptions import NotAuthenticated
 
 from djoser import signals, utils
 from djoser.compat import get_user_email
@@ -40,6 +41,8 @@ class CustomDjoserUserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, 
             self.permission_classes = settings.PERMISSIONS.set_password
         elif self.action == "me":
             self.permission_classes = settings.PERMISSIONS.user_me
+        elif self.action == "subscribe" or self.action == "subscriptions":
+            self.permission_classes = settings.PERMISSIONS.subscribe
         return super().get_permissions()
 
     def get_serializer_class(self):
@@ -116,13 +119,6 @@ class CustomDjoserUserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, 
         self.get_object = Subscribe.objects.filter(subscriber=request.user)
         return self.list(request, *args, **kwargs)
 
-class IngredientViewSet(ReadOnlyModelViewSet):
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-    permission_classes = [AllowAny]
-    pagination_class = None
-    filter_backends = [SearchFilter]
-    search_fields = ['^name']
 
 class TagViewSet(ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
@@ -130,14 +126,32 @@ class TagViewSet(ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     pagination_class = None
 
+class IngredientViewSet(ReadOnlyModelViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    permission_classes = [AllowAny]
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = self.queryset
+        name = self.request.query_params.get('name')
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+        return queryset
+
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = ShortRecipeSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     ModelViewSet.http_method_names.remove('put')
-    # filter_backends = [SearchFilter]
-    # search_fields = ['=is_in_shopping_cart', '=is_favorited', '=tags__slug']
-    
+
+    def get_serializer_class(self):
+        if self.action == "create" or self.action == "partial_update":
+            return CreateUpdateRecipeSerializer
+        elif self.action == "list" or self.action == "retrieve":
+            return FullRecipeSerializer
+        return self.serializer_class
+
     def get_queryset(self):
         queryset = self.queryset
         user = self.request.user
@@ -155,13 +169,6 @@ class RecipeViewSet(ModelViewSet):
             queryset = queryset.filter(author=author)
         return queryset
     
-    def get_serializer_class(self):
-        print(self.action)
-        if self.action == "create" or self.action == "partial_update":
-            return CreateUpdateRecipeSerializer
-        elif self.action == "list" or self.action == "retrieve":
-            return FullRecipeSerializer
-        return self.serializer_class
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -209,6 +216,8 @@ class RecipeViewSet(ModelViewSet):
     @action(["GET"], detail=False)
     def download_shopping_cart(self, request): 
         user = request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated
         queryset = ShoppingCart.objects.filter(user=user)
         shopping_cart = dict()
         header = 'СПАСИБО, ЧТО ПОЛЬЗУЕТЕСЬ НАШИМ САЙТОМ, ВОТ ВАШИ ИНГРЕДИЕНТЫ:\n\n'

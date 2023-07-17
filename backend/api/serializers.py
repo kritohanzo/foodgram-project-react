@@ -27,8 +27,7 @@ class CustomDjoserUserSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        print(1)
-        return Subscribe.objects.filter(subscriber=request.user.id, author=obj).exists()
+        return (request.user.is_authenticated and Subscribe.objects.filter(subscriber=request.user.id, author=obj).exists())
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -86,14 +85,14 @@ class FullRecipeSerializer(ModelSerializer):
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
-        return ShoppingCart.objects.filter(user=request.user, recipe=obj).exists()
+        return (request.user.is_authenticated and ShoppingCart.objects.filter(user=request.user, recipe=obj).exists())
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
-        return Favorite.objects.filter(user=request.user, recipe=obj).exists()
+        return (request.user.is_authenticated and Favorite.objects.filter(user=request.user, recipe=obj).exists())
 
 class CreateUpdateRecipeSerializer(ModelSerializer):
-    image = Base64ToImageField()
+    image = Base64ToImageField(required=False)
     ingredients = CreateIngredientRecipe(many=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
@@ -113,12 +112,14 @@ class CreateUpdateRecipeSerializer(ModelSerializer):
         create_ingredients(ingredients, recipe)
         return recipe
     
+
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         instance.tags.remove()
         instance.tags.set(tags)
         IngredientRecipe.objects.filter(recipe=instance).delete()
+        super().update(instance, validated_data)
         create_ingredients(ingredients, instance)
         return instance
     
