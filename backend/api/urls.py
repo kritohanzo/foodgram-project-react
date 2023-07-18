@@ -17,7 +17,7 @@ router.register(r"recipes", RecipeViewSet, basename="recipes")
 urlpatterns = [
     path("", include(router.urls)),
     path("auth/token/login/", CustomDjoserTokenCreateView.as_view(), name='token_login'),
-    path("auth/token/logout/", TokenDestroyView.as_view()),
+    path("auth/token/logout/", TokenDestroyView.as_view(), name='token_logout'),
     path('docs/', TemplateView.as_view(template_name="redoc.html")),
     path('docs/openapi-schema.yml/', TemplateView.as_view(template_name="openapi-schema.yml")),
 ]
