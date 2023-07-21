@@ -46,8 +46,8 @@ class Subscribe(models.Model):
     author = models.ForeignKey(verbose_name="Автор", to=User, on_delete=models.CASCADE, related_name='subscriptions_author')
 
     class Meta:
-        verbose_name_plural = "Подписки"
-        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки пользователей"
+        verbose_name = "Подписка пользователя"
         ordering = ("id",)
         constraints = [
             models.UniqueConstraint(

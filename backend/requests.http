@@ -31,7 +31,6 @@ Authorization: Token 29308ae9507e831c06183073a6aa00ecb1b3e1c8
 ###
 
 POST http://127.0.0.1:8000/api/users/set_password/
-Authorization: Token c15ed6d70f85c72ff494ce144c3c1b88079eafa1
 Content-Type: application/json
 
 {
@@ -137,12 +136,12 @@ GET http://127.0.0.1:8000/api/recipes/2/
 ###
 
 POST http://127.0.0.1:8000/api/recipes/
-Authorization: token daa2bffd152ed4883f3bb7e9535182a5399af930
+Authorization: token f003f113d3afb492295d419978843a09e7b5eaa5
 Content-Type: application/json
 
 {
-    "name": "Андрей под пивом 2",
-    "text": "Неверо",
+    "name": "test",
+    "text": "test",
     "tags": [
         2,
         3
@@ -157,7 +156,8 @@ Content-Type: application/json
             "amount": 20
         }
     ],
-    "cooking_time": 45
+    "cooking_time": 45,
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZSURBVDhPY/hPIhjVQAwY1UAMGHQa/v8HAK+t/R8kTA7nAAAAAElFTkSuQmCC"
 }
 
 ###
@@ -175,7 +175,7 @@ Content-Type: application/json
 ###
 
 PATCH http://127.0.0.1:8000/api/recipes/2/
-Authorization: token daa2bffd152ed4883f3bb7e9535182a5399af930
+Authorization: token f003f113d3afb492295d419978843a09e7b5eaa5
 Content-Type: application/json
 
 {

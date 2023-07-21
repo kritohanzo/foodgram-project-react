@@ -3,29 +3,27 @@ from users.models import User, Subscribe
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status, generics
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from api.permissions import DisallowAny
-from rest_framework.exceptions import NotFound
+from api.permissions import IsAuthorOrReadOnly
 from django.contrib.auth import update_session_auth_hash
 from recipes.models import Ingredient, Tag, Recipe, Favorite, ShoppingCart, IngredientRecipe
 from django.shortcuts import get_object_or_404
-from api.serializers import IngredientSerializer, TagSerializer, FullRecipeSerializer, ShortRecipeSerializer, CreateUpdateRecipeSerializer
-from rest_framework.filters import SearchFilter
+from api.serializers import IngredientSerializer, TagSerializer, FullRecipeSerializer, ShortRecipeSerializer, CreateUpdateRecipeSerializer, SubscribeSerializer, UserSerializer
 from rest_framework.viewsets import mixins
 from rest_framework.exceptions import NotAuthenticated
-
-from djoser import signals, utils
+from djoser.serializers import UserCreateSerializer, SetPasswordSerializer, TokenCreateSerializer, TokenSerializer
+from rest_framework.views import APIView
+from djoser import utils
 from djoser.compat import get_user_email
 from djoser.conf import settings
 from django.shortcuts import HttpResponse
-from datetime import datetime
+from extra.utils import generate_txt
 
-class CustomDjoserUserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.CreateModelMixin, GenericViewSet):
-    serializer_class = settings.SERIALIZERS.user
+class UserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.CreateModelMixin, GenericViewSet):
+    serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = settings.PERMISSIONS.user
-    lookup_field = settings.USER_ID_FIELD
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         if self.action == "subscribe" or self.action == "subscriptions":
@@ -33,36 +31,22 @@ class CustomDjoserUserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, 
         return super().get_queryset()
 
     def get_permissions(self):
-        if self.action == "create":
-            self.permission_classes = settings.PERMISSIONS.user_create
-        elif self.action == "list":
-            self.permission_classes = settings.PERMISSIONS.user_list
-        elif self.action == "set_password":
-            self.permission_classes = settings.PERMISSIONS.set_password
-        elif self.action == "me":
-            self.permission_classes = settings.PERMISSIONS.user_me
-        elif self.action == "subscribe" or self.action == "subscriptions":
-            self.permission_classes = settings.PERMISSIONS.subscribe
+        if self.action == "create" or self.action == "list":
+            self.permission_classes = [AllowAny]
+        elif self.action == "set_password" or self.action == "me" or self.action == "subscribe" or self.action == "subscriptions":
+            self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
     def get_serializer_class(self):
         if self.action == "create":
-            if settings.USER_CREATE_PASSWORD_RETYPE:
-                return settings.SERIALIZERS.user_create_password_retype
-            return settings.SERIALIZERS.user_create
+            return UserCreateSerializer
         elif self.action == "set_password":
-            if settings.SET_PASSWORD_RETYPE:
-                return settings.SERIALIZERS.set_password_retype
-            return settings.SERIALIZERS.set_password
-        elif self.action == "me":
-            return settings.SERIALIZERS.current_user
+            return SetPasswordSerializer
         elif self.action == "subscribe" or self.action == "subscriptions":
-            return settings.SERIALIZERS.subscribe
-
-        return self.serializer_class
+            return SubscribeSerializer
+        return super().get_serializer_class()
 
     def get_instance(self):
-        print(self.request.user)
         return self.request.user
 
     @action(["get"], detail=False)
@@ -70,24 +54,12 @@ class CustomDjoserUserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, 
         self.get_object = self.get_instance
         return self.retrieve(request, *args, **kwargs)
         
-
-    @action(["post"], detail=False)
+    @action(["post"], detail=False, url_name='set_password')
     def set_password(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         self.request.user.set_password(serializer.data["new_password"])
         self.request.user.save()
-
-        if settings.PASSWORD_CHANGED_EMAIL_CONFIRMATION:
-            context = {"user": self.request.user}
-            to = [get_user_email(self.request.user)]
-            settings.EMAIL.password_changed_confirmation(self.request, context).send(to)
-
-        if settings.LOGOUT_ON_PASSWORD_CHANGE:
-            utils.logout_user(self.request)
-        elif settings.CREATE_SESSION_ON_LOGIN:
-            update_session_auth_hash(self.request, self.request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     @action(["POST", "DELETE"], detail=False, url_path=r"(?P<id>\w+)/subscribe")
@@ -119,19 +91,18 @@ class CustomDjoserUserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, 
         self.get_object = Subscribe.objects.filter(subscriber=request.user)
         return self.list(request, *args, **kwargs)
 
-class CustomDjoserTokenCreateView(utils.ActionViewMixin, generics.GenericAPIView):
+class TokenCreateView(utils.ActionViewMixin, generics.GenericAPIView):
     """Use this endpoint to obtain user authentication token."""
 
-    serializer_class = settings.SERIALIZERS.token_create
-    permission_classes = settings.PERMISSIONS.token_create
+    serializer_class = TokenCreateSerializer
+    permission_classes = [AllowAny]
 
     def _action(self, serializer):
         token = utils.login_user(self.request, serializer.user)
-        token_serializer_class = settings.SERIALIZERS.token
+        token_serializer_class = TokenSerializer
         return Response(
             data=token_serializer_class(token).data, status=status.HTTP_201_CREATED
         )
-
 
 class TagViewSet(ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
@@ -155,7 +126,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = ShortRecipeSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     ModelViewSet.http_method_names.remove('put')
 
     def get_serializer_class(self):
@@ -206,7 +177,7 @@ class RecipeViewSet(ModelViewSet):
             else:
                 return Response({"errors": "Такого рецепта нет в избранном"}, status=status.HTTP_400_BAD_REQUEST)
             
-    @action(["POST", "DELETE"], detail=False, url_path=r"(?P<id>\w+)/shopping_cart")
+    @action(["POST", "DELETE"], detail=False, url_path=r"(?P<id>\w+)/shopping_cart", url_name="shopping_cart")
     def shopping_cart(self, request, id):
         user = request.user
         recipe = Recipe.objects.get(id=id)
@@ -226,26 +197,12 @@ class RecipeViewSet(ModelViewSet):
             else:
                 return Response({"errors": "Такого рецепта нет в списке покупок"}, status=status.HTTP_400_BAD_REQUEST)
             
-    @action(["GET"], detail=False)
+    @action(["GET"], detail=False, url_name='download_shopping_cart')
     def download_shopping_cart(self, request): 
         user = request.user
         if not user.is_authenticated:
             raise NotAuthenticated
         queryset = ShoppingCart.objects.filter(user=user)
-        shopping_cart = dict()
-        header = 'СПАСИБО, ЧТО ПОЛЬЗУЕТЕСЬ НАШИМ САЙТОМ, ВОТ ВАШИ ИНГРЕДИЕНТЫ:\n\n'
-        for row_of_cart in queryset:
-            ingredients = IngredientRecipe.objects.filter(recipe=row_of_cart.recipe)
-            for row_of_ingredient_recipe in ingredients:
-                ingredient = Ingredient.objects.get(id=row_of_ingredient_recipe.ingredient.id)
-                key = ingredient.name
-                value = [row_of_ingredient_recipe.amount, ingredient.measurement_unit]
-                if ingredient.name in shopping_cart:
-                    shopping_cart[key][0] += row_of_ingredient_recipe.amount
-                else:
-                    shopping_cart[key] = value
-        print(shopping_cart)
-        content = header + "\n".join([f"{igredient_name} - {amount_measurement_unit[0]} {amount_measurement_unit[1]}" for igredient_name, amount_measurement_unit in shopping_cart.items()])
-        response = HttpResponse(content, content_type='text/plain; charset=utf-8')
-        response['Content-Disposition'] = f'attachment; filename="Shopping cart for {user}.txt"'
-        return response       
+        
+        content = generate_txt(user, queryset)
+        return HttpResponse(content, content_type='text/plain; charset=utf-8')   

@@ -114,9 +114,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "users.User"
 
-# скорее всего не нужен - удалить
-# AUTHENTICATION_BACKENDS = ['users.backends.EmailBackend']
-
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "api.permissions.DisallowAny",
@@ -126,25 +123,6 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 6,
-    'SEARCH_PARAM': 'name'
-}
-
-DJOSER = {
-    'LOGIN_FIELD': "email",
-    'PERMISSIONS': {
-        'user_list': ['rest_framework.permissions.AllowAny'],
-        'user_create': ['rest_framework.permissions.AllowAny'],
-        'user': ['rest_framework.permissions.IsAuthenticated'],
-        'user_me': ['rest_framework.permissions.IsAuthenticated'],
-        'set_password': ['rest_framework.permissions.IsAuthenticated'],
-        'token_create': ['rest_framework.permissions.AllowAny'],
-        'token_destroy': ['rest_framework.permissions.IsAuthenticated'],
-        'subscribe': ['rest_framework.permissions.IsAuthenticated']
-
-    },
-    'SERIALIZERS': {
-        'user': 'api.serializers.CustomDjoserUserSerializer',
-        'subscribe': 'api.serializers.SubscribeSerializer'
-    },
-    'SET_PASSWORD_RETYPE': False
+    'SEARCH_PARAM': 'name',
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }

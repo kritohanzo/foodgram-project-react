@@ -40,8 +40,8 @@ class Recipe(models.Model):
     name = models.CharField(verbose_name="Название", max_length=128)
     image = models.ImageField(verbose_name="Картинка")
     text = models.TextField(verbose_name="Описание")
-    ingredients = models.ManyToManyField(Ingredient, through="IngredientRecipe")
-    tags = models.ManyToManyField(Tag, through="TagRecipe")
+    ingredients = models.ManyToManyField(Ingredient, through="IngredientRecipe", verbose_name="Ингредиенты")
+    tags = models.ManyToManyField(Tag, through="TagRecipe", verbose_name="Теги")
     cooking_time = models.IntegerField(verbose_name="Время приготовления")
                                        
     class Meta:
@@ -51,6 +51,7 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class IngredientRecipe(models.Model):
     recipe = models.ForeignKey(verbose_name="Рецепт", to=Recipe, on_delete=models.CASCADE, related_name="ingredients_recipes")
