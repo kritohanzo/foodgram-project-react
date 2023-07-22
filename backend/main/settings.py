@@ -14,7 +14,7 @@ SECRET_KEY = (
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'foodgram.kritohanzo.ru', 'kritohanzo.ru', '158.160.73.82']
 
 INSTALLED_APPS = [
     "django.contrib.admin",

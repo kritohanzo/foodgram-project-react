@@ -27,10 +27,10 @@ services:
     command: cp -r /app/build/. /frontend_static/
     volumes:
       - foodgram_static:/app/result_build/build
-  gateway:
+  nginx:
     image: kritohanzo/foodgram_nginx
     ports:
-      - 80:80
+      - 8000:80
     volumes:
       - foodgram_static:/usr/share/nginx/html/
       - foodgram_media:/media
