@@ -1,7 +1,9 @@
 import json
-from django.core.management.base import BaseCommand, CommandError
-from django.apps import apps
+
 from progress.bar import PixelBar
+
+from django.apps import apps
+from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):

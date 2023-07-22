@@ -1,15 +1,17 @@
-from rest_framework.test import APITestCase
-from users.models import User, Subscribe
-from django.urls import reverse
-from rest_framework import status
-from rest_framework.authtoken.models import Token
-from recipes.models import Tag, Ingredient, Recipe, Favorite, ShoppingCart
-from rest_framework.test import APIClient
-from rest_framework.test import override_settings
 import shutil
 import tempfile
 from copy import deepcopy
+
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient, APITestCase, override_settings
+
+from django.urls import reverse
+
 from core.utils import create_ingredients
+from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from users.models import Subscribe, User
+
 
 MEDIA_ROOT = tempfile.mkdtemp()
 

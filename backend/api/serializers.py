@@ -1,16 +1,10 @@
-from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from recipes.models import (
-    Ingredient,
-    Tag,
-    Recipe,
-    IngredientRecipe,
-    ShoppingCart,
-    Favorite,
-)
-from users.models import User, Subscribe
-from core.utils import Base64ToImageField
-from core.utils import create_ingredients
+from rest_framework.serializers import ModelSerializer
+
+from core.utils import Base64ToImageField, create_ingredients
+from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                            ShoppingCart, Tag,)
+from users.models import Subscribe, User
 
 
 class UserSerializer(serializers.ModelSerializer):

@@ -1,44 +1,26 @@
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from users.models import User, Subscribe
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import status, generics
-from rest_framework.permissions import (
-    IsAuthenticatedOrReadOnly,
-    AllowAny,
-    IsAuthenticated,
-)
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from api.permissions import IsAuthorOrReadOnly
-from recipes.models import (
-    Ingredient,
-    Tag,
-    Recipe,
-    Favorite,
-    ShoppingCart,
-)
-from django.shortcuts import get_object_or_404
-from api.serializers import (
-    IngredientSerializer,
-    TagSerializer,
-    FullRecipeSerializer,
-    ShortRecipeSerializer,
-    CreateUpdateRecipeSerializer,
-    SubscribeSerializer,
-    UserSerializer,
-)
-from rest_framework.viewsets import mixins
-from rest_framework.exceptions import NotAuthenticated
-from djoser.serializers import (
-    UserCreateSerializer,
-    SetPasswordSerializer,
-    TokenCreateSerializer,
-    TokenSerializer,
-)
 from djoser import utils
-from django.shortcuts import HttpResponse
-from core.utils import generate_txt
+from djoser.serializers import (SetPasswordSerializer, TokenCreateSerializer,
+                                TokenSerializer, UserCreateSerializer,)
+from rest_framework import generics, status
+from rest_framework.decorators import action
+from rest_framework.exceptions import NotAuthenticated
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly,)
+from rest_framework.response import Response
+from rest_framework.viewsets import (GenericViewSet, ModelViewSet,
+                                     ReadOnlyModelViewSet, mixins,)
+
 from django.db.utils import IntegrityError
+from django.shortcuts import HttpResponse, get_object_or_404
+
+from api.permissions import IsAuthorOrReadOnly
+from api.serializers import (CreateUpdateRecipeSerializer,
+                             FullRecipeSerializer, IngredientSerializer,
+                             ShortRecipeSerializer, SubscribeSerializer,
+                             TagSerializer, UserSerializer,)
+from core.utils import generate_txt
+from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from users.models import Subscribe, User
 
 
 class UserViewSet(

@@ -1,5 +1,7 @@
 from django.contrib import admin
-from users.models import User, Subscribe
+
+from users.models import Subscribe, User
+
 
 admin.site.site_header = "Администрирование Foodgram"
 EMPTY_VALUE_DISPLAY = "—"

@@ -1,8 +1,10 @@
-from recipes.models import IngredientRecipe, Ingredient
-from rest_framework.serializers import ValidationError
-from rest_framework.serializers import ImageField
-from django.core.files.base import ContentFile
 import base64
+
+from rest_framework.serializers import ImageField, ValidationError
+
+from django.core.files.base import ContentFile
+
+from recipes.models import Ingredient, IngredientRecipe
 
 
 class Base64ToImageField(ImageField):

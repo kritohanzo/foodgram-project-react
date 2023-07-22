@@ -1,9 +1,13 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import UserViewSet, TagViewSet, IngredientViewSet, RecipeViewSet
-from django.views.generic import TemplateView
-from api.views import TokenCreateView
 from djoser.views import TokenDestroyView
+from rest_framework.routers import DefaultRouter
+
+from django.urls import include, path
+from django.views.generic import TemplateView
+
+from api.views import TokenCreateView
+
+from .views import IngredientViewSet, RecipeViewSet, TagViewSet, UserViewSet
+
 
 app_name = "api"
 

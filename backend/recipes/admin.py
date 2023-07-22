@@ -1,12 +1,8 @@
 from django.contrib import admin
-from recipes.models import (
-    Tag,
-    Ingredient,
-    Recipe,
-    TagRecipe,
-    IngredientRecipe,
-    Favorite,
-)
+
+from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                            Tag, TagRecipe,)
+
 
 admin.site.site_header = "Администрирование Foodgram"
 EMPTY_VALUE_DISPLAY = "—"
