@@ -4,23 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0003_auto_20230704_1535'),
+        ("users", "0003_auto_20230704_1535"),
     ]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='subscribe',
-            name='unique_subcriber_author',
+            model_name="subscribe",
+            name="unique_subcriber_author",
         ),
         migrations.RenameField(
-            model_name='subscribe',
-            old_name='subcriber',
-            new_name='subscriber',
+            model_name="subscribe",
+            old_name="subcriber",
+            new_name="subscriber",
         ),
         migrations.AddConstraint(
-            model_name='subscribe',
-            constraint=models.UniqueConstraint(fields=('subscriber', 'author'), name='unique_subscriber_author'),
+            model_name="subscribe",
+            constraint=models.UniqueConstraint(
+                fields=("subscriber", "author"),
+                name="unique_subscriber_author",
+            ),
         ),
     ]

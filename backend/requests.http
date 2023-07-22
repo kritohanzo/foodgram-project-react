@@ -136,23 +136,23 @@ GET http://127.0.0.1:8000/api/recipes/2/
 ###
 
 POST http://127.0.0.1:8000/api/recipes/
-Authorization: token f003f113d3afb492295d419978843a09e7b5eaa5
+Authorization: token e06be64a2357bebbdb8277ec417afca41d996dd4
 Content-Type: application/json
 
 {
     "name": "test",
     "text": "test",
     "tags": [
-        2,
-        3
+        15,
+        2
     ],
     "ingredients": [
         {
-            "id": 748,
+            "id": 997748,
             "amount": 20
         },
         {
-            "id": 753,
+            "id": 75783,
             "amount": 20
         }
     ],

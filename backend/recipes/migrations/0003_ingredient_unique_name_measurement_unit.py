@@ -4,14 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recipes', '0002_auto_20230704_1535'),
+        ("recipes", "0002_auto_20230704_1535"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='ingredient',
-            constraint=models.UniqueConstraint(fields=('name', 'measurement_unit'), name='unique_name_measurement_unit'),
+            model_name="ingredient",
+            constraint=models.UniqueConstraint(
+                fields=("name", "measurement_unit"),
+                name="unique_name_measurement_unit",
+            ),
         ),
     ]
