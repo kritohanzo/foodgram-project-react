@@ -34,7 +34,7 @@ class CreateUserTest(APITestCase):
             "username": "test",
             "first_name": "Test",
             "last_name": "Testov",
-            "id": 1,
+            "id": User.objects.filter(username="test").last().id,
         }
         self.assertEqual(
             response.status_code,
@@ -888,7 +888,9 @@ class CreateRecipeTest(APITestCase):
         self.ingredient_1["amount"] = self.amount_1
         self.ingredient_2["amount"] = self.amount_2
         expected_data = {
-            "id": 1,
+            "id": Recipe.objects.filter(name=self.request_data.get("name"))
+            .last()
+            .id,
             "tags": [self.tag_1, self.tag_2],
             "author": {
                 "username": self.user.username,
@@ -983,11 +985,6 @@ class CreateRecipeTest(APITestCase):
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class UpdateRecipeTest(APITestCase):
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
-        super().tearDownClass()
-
     def setUp(self):
         self.user = User.objects.create(
             username="test",
@@ -1128,7 +1125,7 @@ class UpdateRecipeTest(APITestCase):
         self.assertEqual(
             {
                 "detail": "У вас недостаточно прав "
-                          "для выполнения данного действия."
+                "для выполнения данного действия."
             },
             response.data,
             "Тело ответа API не соответствует документации",
@@ -1294,7 +1291,7 @@ class DeleteRecipe(APITestCase):
         self.assertEqual(
             {
                 "detail": "У вас недостаточно прав "
-                          "для выполнения данного действия."
+                "для выполнения данного действия."
             },
             response.data,
             "Тело ответа API не соответствует документации",
