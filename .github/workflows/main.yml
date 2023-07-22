@@ -87,11 +87,11 @@ jobs:
     - name: Set up nodeJS
       uses: actions/setup-node@v3
       with:
-        node-version: 18
+        node-version: 13.12.0
     - name: Install dependencies
       run: |
         cd frontend/
-        npm ci --legacy-peer-deps
+        npm ci
     - name: Test frontend
       run: |
         cd frontend/
