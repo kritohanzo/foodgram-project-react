@@ -26,7 +26,7 @@ services:
     env_file: .env
     command: cp -r /app/build/. /frontend_static/
     volumes:
-      - foodgram_static:/app/result_build/build
+      - foodgram_static:/frontend_static/
   nginx:
     image: kritohanzo/foodgram_nginx
     ports:
