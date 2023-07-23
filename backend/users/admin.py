@@ -14,9 +14,15 @@ class UserConfig(admin.ModelAdmin):
         "email",
         "first_name",
         "last_name",
-        "role",
+        "is_staff",
     ]
-    list_editable = ["username", "email", "first_name", "last_name", "role"]
+    list_editable = [
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "is_staff",
+    ]
     search_fields = ["username", "email"]
     empty_value_display = EMPTY_VALUE_DISPLAY
 

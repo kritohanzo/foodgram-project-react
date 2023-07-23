@@ -33,12 +33,8 @@ class RecipeConfig(admin.ModelAdmin):
         "author",
         "name",
         "text",
-        "get_ingredients",
-        "get_tags",
-        "image",
-        "cooking_time",
-        "count_favorites",
     ]
+    readonly_fields = ["pub_date", "count_favorites"]
     list_editable = ["name", "text"]
     search_fields = [
         "name",
@@ -55,7 +51,7 @@ class RecipeConfig(admin.ModelAdmin):
     def get_tags(self, obj):
         return [tag.name for tag in obj.tags.all()]
 
-    def count_favorites(self, obj: Recipe) -> int:
+    def count_favorites(self, obj):
         return obj.favorites.count()
 
     get_tags.short_description = "Теги"

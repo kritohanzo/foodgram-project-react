@@ -648,44 +648,9 @@ class ListRecipesTest(APITestCase):
 
     def test_can_list_recipes(self):
         """
-        Проверяем, что любой пользователь можетт получить список рецептов.
+        Проверяем, что любой пользователь может получить список рецептов.
         """
         expected_data = [
-            {
-                "id": self.recipe_1.id,
-                "tags": [
-                    {
-                        "id": self.tag.id,
-                        "name": self.tag.name,
-                        "color": self.tag.color,
-                        "slug": self.tag.slug,
-                    }
-                ],
-                "author": {
-                    "username": self.user.username,
-                    "first_name": self.user.first_name,
-                    "last_name": self.user.last_name,
-                    "id": self.user.id,
-                    "email": self.user.email,
-                    "is_subscribed": False,
-                },
-                "ingredients": [
-                    {
-                        "id": self.ingredient.get("id"),
-                        "name": self.ingredient.get("name"),
-                        "measurement_unit": self.ingredient.get(
-                            "measurement_unit"
-                        ),
-                        "amount": self.ingredient.get("amount"),
-                    }
-                ],
-                "is_in_shopping_cart": False,
-                "is_favorited": False,
-                "name": self.recipe_1.name,
-                "image": "http://testserver" + self.recipe_1.image.url,
-                "text": self.recipe_1.text,
-                "cooking_time": self.recipe_1.cooking_time,
-            },
             {
                 "id": self.recipe_2.id,
                 "tags": [
@@ -721,6 +686,41 @@ class ListRecipesTest(APITestCase):
                 "text": self.recipe_2.text,
                 "cooking_time": self.recipe_2.cooking_time,
             },
+            {
+                "id": self.recipe_1.id,
+                "tags": [
+                    {
+                        "id": self.tag.id,
+                        "name": self.tag.name,
+                        "color": self.tag.color,
+                        "slug": self.tag.slug,
+                    }
+                ],
+                "author": {
+                    "username": self.user.username,
+                    "first_name": self.user.first_name,
+                    "last_name": self.user.last_name,
+                    "id": self.user.id,
+                    "email": self.user.email,
+                    "is_subscribed": False,
+                },
+                "ingredients": [
+                    {
+                        "id": self.ingredient.get("id"),
+                        "name": self.ingredient.get("name"),
+                        "measurement_unit": self.ingredient.get(
+                            "measurement_unit"
+                        ),
+                        "amount": self.ingredient.get("amount"),
+                    }
+                ],
+                "is_in_shopping_cart": False,
+                "is_favorited": False,
+                "name": self.recipe_1.name,
+                "image": "http://testserver" + self.recipe_1.image.url,
+                "text": self.recipe_1.text,
+                "cooking_time": self.recipe_1.cooking_time,
+            }
         ]
         response = self.client.get(reverse("api:recipes-list"))
         self.assertEqual(
