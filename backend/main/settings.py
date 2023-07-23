@@ -8,13 +8,15 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = (
-    "django-insecure-gbv^xez2$sf^7&ek0k#98m1@&vmrgl8n(f)z!tb@_x*%l3za&-"
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY", "^2o&5z5tyt-*_k4yyt15*(8&0b!c&^j(0!d=%bneo!1f#yg1qw"
 )
 
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", True)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'foodgram.kritohanzo.ru', 'kritohanzo.ru', '158.160.73.82']
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(
+    ","
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -64,13 +66,13 @@ TEMPLATES = [
 WSGI_APPLICATION = "main.wsgi.application"
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'django'),
-        'USER': os.getenv('POSTGRES_USER', 'django_user'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'django_password'),
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', 5432)
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "django"),
+        "USER": os.getenv("POSTGRES_USER", "django_user"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "django_password"),
+        "HOST": os.getenv("DB_HOST", "127.0.0.1"),
+        "PORT": os.getenv("DB_PORT", 5432),
     }
 }
 
