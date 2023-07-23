@@ -214,7 +214,7 @@ class RecipeViewSet(ModelViewSet):
     получать информацию о своём списке избранного.
     """
 
-    queryset = Recipe.objects.select_related("author", "tags", "ingredients")
+    queryset = Recipe.objects.select_related("author")
     serializer_class = ShortRecipeSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     ModelViewSet.http_method_names.remove("put")
