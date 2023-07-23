@@ -37,6 +37,7 @@ class RecipeConfig(admin.ModelAdmin):
         "get_tags",
         "image",
         "cooking_time",
+        "pub_date",
         "count_favorites",
     ]
     list_editable = ["name", "text"]

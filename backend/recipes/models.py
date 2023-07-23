@@ -71,11 +71,15 @@ class Recipe(models.Model):
             MinValueValidator(1, "Время приготовления должно быть больше 0")
         ],
     )
+    pub_date = models.DateTimeField(
+        verbose_name="Дата публикации",
+        auto_now_add=True
+    )
 
     class Meta:
         verbose_name_plural = "Рецепты"
         verbose_name = "Рецепт"
-        ordering = ("name",)
+        ordering = ("-pub_date",)
 
     def __str__(self):
         return self.name
