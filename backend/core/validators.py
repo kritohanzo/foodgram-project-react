@@ -1,9 +1,10 @@
 import re
+from typing import Union
 
 from django.core.exceptions import ValidationError
 
 
-def validate_username(value):
+def validate_username(value: str) -> Union[str, ValidationError]:
     """Функция-валидатор, проверяет,
     что пользователь корректно указал username.
 

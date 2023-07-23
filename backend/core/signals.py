@@ -7,7 +7,7 @@ from recipes.models import Recipe
 
 
 @receiver(post_delete, sender=Recipe)
-def delete_image(sender, instance, *a, **kw):
+def delete_image(sender: Recipe, instance: Recipe, *args, **kwargs) -> None:
     """Сигнал, удаляющий изображение, в случае удаления рецепта."""
     image = Path(instance.image.path)
     if image.exists():

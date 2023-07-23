@@ -1,10 +1,22 @@
 import base64
+from enum import Enum
 
 from rest_framework.serializers import ImageField, ValidationError
 
 from django.core.files.base import ContentFile
+from django.db.models import QuerySet
 
-from recipes.models import Ingredient, IngredientRecipe
+from recipes.models import Ingredient, IngredientRecipe, Recipe
+from users.models import User
+
+
+class RoleChoiser(Enum):
+    USER = "user"
+    ADMIN = "admin"
+
+    @classmethod
+    def choices(cls):
+        return tuple((role.name, role.value) for role in cls)
 
 
 class Base64ToImageField(ImageField):
@@ -17,7 +29,7 @@ class Base64ToImageField(ImageField):
         return super().to_internal_value(data)
 
 
-def create_ingredients(ingredients, recipe):
+def create_ingredients(ingredients: list[dict[int]], recipe: Recipe) -> None:
     """
     Вспомогательная функция для добавления ингредиентов, которая
     используется при создании/редактировании рецепта.
@@ -41,7 +53,7 @@ def create_ingredients(ingredients, recipe):
     IngredientRecipe.objects.bulk_create(ingredients_list)
 
 
-def generate_txt(user, shopping_cart_queryset):
+def generate_txt(user: User, shopping_cart_queryset: QuerySet) -> str:
     """Вспомогательная функция для генерации TXT файла."""
     shopping_cart = dict()
     for row_of_shopping_cart in shopping_cart_queryset:
