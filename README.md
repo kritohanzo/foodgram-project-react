@@ -1,6 +1,78 @@
-# praktikum_new_diplom
-Привет! =)
-Deploy server IP: 158.160.73.82
-Deploy server domain name: foodgram.kritohanzo.ru
-Admin email: admin@mail.ru
-Admin password: arbuz123
+# Foodgram — ваш помощник в мире рецептов!
+
+> для ревьювера:\
+> Привет! =)
+> * Deploy server IP: 158.160.73.82
+> * Deploy server domain name: [foodgram.kritohanzo.ru](https://foodgram.kritohanzo.ru/)
+> * Admin email: admin@mail.ru
+> * Admin password: arbuz123
+
+Проект нацелен на людей, которые обожают готовить и делиться своим творчеством в интернете.\
+На [сайте](https://foodgram.kritohanzo.ru/) нашего проект любой желающий может оставить рецепт своего любимого блюда, либо же подсмотреть чужой рецепт какого-то вкусного блюда.
+
+### Как создать свой первый рецепт?
+* Пройдите по ссылке на наш сайт (кликабельное поле выше);
+* Вас встретит форма входа в аккаунт, в верхнем левом углу экрана нажмите на кнопку создания нового аккаунта;
+* Введите свой логин, имя, фамилию, почту и пароль, никаких подтверждений не потребуется;
+* После создания аккаунта вы сможете войти в свой новый аккаунт;
+* В панели навигации сверху выберите «Создать рецепт»;
+* Заполните всю информацию о рецепте;
+* Поздравляем, рецепт создан!
+
+## Как запустить проект локально, если вы разработчик?
+### Если вас интересует только backend:
+* Клонируйте репозиторий к себе на ПК:\
+```
+git clone https://github.com/kritohanzo/foodgram-project-react.git
+```
+* Перейдите в директорию, отвечающую за backend:
+```
+cd foodgram-project-react/backend
+```
+* Создайте новое виртуальное окружение и работайте через него:
+```
+python -m venv venv
+source venv/Scripts/activate (для windows)
+source venv/bin/activate (для linux)
+```
+* Установите зависимости, необходимые для запуска backend части проекта:
+```
+pip install -r requirements/requirements.project.txt
+```
+* Разверните сервер PostgreSQL, либо поменяйте базу данных в настройках проекта, как показано ниже:\
+```
+#main/settings.py
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
+    }
+}
+```
+* Выполните миграции и запустите проект:
+```
+python manage.py migrate
+python manage.py runserver
+```
+* Для просмотра тестовых запросов, по желанию, вы можете использовать файл requests.http, который лежит в папке проекта.
+### Если вы хотите запустить проект полностью (Docker):
+* Клонируйте репозиторий к себе на ПК:
+```
+git clone https://github.com/kritohanzo/foodgram-project-react.git
+```
+* Перейдите в директорию репозитория:
+```
+cd foodgram-project-react
+```
+* Запустите docker-compose, который соберёт образы на основе Dockerfile, лежащих в папках проектов:
+```
+sudo docker compose -f docker-compose.yml up
+```
+* Откройте браузер и зайдите на *localhost*, у вас загрузится страница проекта.
+
+## Содействие
+
+Pull requests приветствуются.\
+Для серьезных изменений, пожалуйста, откройте issue для обсуждения того, что бы вы хотели изменить.\
+Обязательно обновите автотесты по мере необходимости.
