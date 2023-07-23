@@ -1594,7 +1594,7 @@ class AddShoppingCart(APITestCase):
         )
 
 
-class DeleteFavorite(APITestCase):
+class DeleteShoppingCart(APITestCase):
     def setUp(self):
         self.user = User.objects.create(
             username="test",
@@ -2062,7 +2062,7 @@ class DownloadShoppingCart(APITestCase):
             "Запрос не инициализирует загрузку текстового файла",
         )
 
-    def test_auth_user_can_download_shopping_cart(self):
+    def test_noauth_user_cant_download_shopping_cart(self):
         """
         Проверяем, что неаунтифицированнный пользователь
         не может скачать список покупок.
