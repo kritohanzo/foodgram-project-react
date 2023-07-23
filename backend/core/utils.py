@@ -1,5 +1,4 @@
 import base64
-from enum import Enum
 
 from rest_framework.serializers import ImageField, ValidationError
 
@@ -8,15 +7,6 @@ from django.db.models import QuerySet
 
 from recipes.models import Ingredient, IngredientRecipe, Recipe
 from users.models import User
-
-
-class RoleChoiser(Enum):
-    USER = "user"
-    ADMIN = "admin"
-
-    @classmethod
-    def choices(cls):
-        return tuple((role.name, role.value) for role in cls)
 
 
 class Base64ToImageField(ImageField):

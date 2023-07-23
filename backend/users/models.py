@@ -1,8 +1,18 @@
+from enum import Enum
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from core.utils import RoleChoiser
 from core.validators import validate_username
+
+
+class RoleChoiser(Enum):
+    USER = "user"
+    ADMIN = "admin"
+
+    @classmethod
+    def choices(cls):
+        return tuple((role.name, role.value) for role in cls)
 
 
 class User(AbstractUser):
