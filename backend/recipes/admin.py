@@ -34,7 +34,7 @@ class RecipeConfig(admin.ModelAdmin):
         "name",
         "text",
     ]
-    readonly_fields = ["count_favorites"]
+    readonly_fields = ["pub_date", "count_favorites"]
     list_editable = ["name", "text"]
     search_fields = [
         "name",
