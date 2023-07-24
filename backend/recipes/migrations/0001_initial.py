@@ -32,7 +32,8 @@ class Migration(migrations.Migration):
                 (
                     "measurement_unit",
                     models.CharField(
-                        max_length=16, verbose_name="Единица измерения"
+                        max_length=16,
+                        verbose_name="Единица измерения",
                     ),
                 ),
             ],
@@ -54,7 +55,10 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("quantity", models.IntegerField(verbose_name="Количество")),
+                (
+                    "quantity",
+                    models.IntegerField(verbose_name="Количество"),
+                ),
                 (
                     "ingredient",
                     models.ForeignKey(
@@ -85,7 +89,10 @@ class Migration(migrations.Migration):
                     "image",
                     models.ImageField(upload_to="", verbose_name="Картинка"),
                 ),
-                ("description", models.TextField(verbose_name="Описание")),
+                (
+                    "description",
+                    models.TextField(verbose_name="Описание"),
+                ),
                 (
                     "cooking_time",
                     models.IntegerField(verbose_name="Время приготовления"),
@@ -128,7 +135,9 @@ class Migration(migrations.Migration):
                 (
                     "name",
                     models.CharField(
-                        max_length=64, unique=True, verbose_name="Название"
+                        max_length=64,
+                        unique=True,
+                        verbose_name="Название",
                     ),
                 ),
                 (
@@ -142,7 +151,9 @@ class Migration(migrations.Migration):
                 (
                     "slug",
                     models.SlugField(
-                        max_length=64, unique=True, verbose_name="SLUG"
+                        max_length=64,
+                        unique=True,
+                        verbose_name="SLUG",
                     ),
                 ),
             ],

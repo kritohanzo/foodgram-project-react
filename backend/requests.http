@@ -45,7 +45,7 @@ Content-Type: application/json
 
 {
     "email": "ya@mail.ru",
-    "password": "arbuz123"
+    "password": "arbuz1234"
 }
 
 ###
@@ -58,17 +58,17 @@ Authorization: Token f003f113d3afb492295d419978843a09e7b5eaa5
 ### 
 
 GET http://127.0.0.1:8000/api/users/subscriptions/
-Authorization: Token daa2bffd152ed4883f3bb7e9535182a5399af930
+Authorization: Token f003f113d3afb492295d419978843a09e7b5eaa5
 
 ###
 
 POST http://127.0.0.1:8000/api/users/1/subscribe/
-Authorization: Token daa2bffd152ed4883f3bb7e9535182a5399af930
+Authorization: Token f003f113d3afb492295d419978843a09e7b5eaa5
 
 ###
 
-DELETE http://127.0.0.1:8000/api/users/2/subscribe/
-Authorization: Token daa2bffd152ed4883f3bb7e9535182a5399af930
+DELETE http://127.0.0.1:8000/api/users/1/subscribe/
+Authorization: Token f003f113d3afb492295d419978843a09e7b5eaa5
 
 ### 
 # ↓ TAGS SIDE REQUESTS ↓

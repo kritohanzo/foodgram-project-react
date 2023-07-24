@@ -22,8 +22,7 @@ jobs:
         pip install -r ./backend/requirements/requirements.lint.txt
     - name: Test with FLAKE8
       run: |
-        cd backend/
-        python -m flake8 .
+        python -m flake8 backend/.
   backend_django_test:
     name: Test backend code with Django Test Cases
     runs-on: ubuntu-latest

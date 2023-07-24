@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recipes', '0014_alter_recipe_image'),
+        ("recipes", "0014_alter_recipe_image"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='recipe',
-            name='image',
-            field=models.ImageField(upload_to='', verbose_name='Картинка'),
+            model_name="recipe",
+            name="image",
+            field=models.ImageField(upload_to="", verbose_name="Картинка"),
         ),
     ]

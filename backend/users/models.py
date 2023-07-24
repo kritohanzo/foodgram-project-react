@@ -63,8 +63,5 @@ class Subscribe(models.Model):
             )
         ]
 
-    def __call__(self):
-        return self
-
     def __str__(self):
         return f"{self.subscriber.username} подписан на {self.author.username}"

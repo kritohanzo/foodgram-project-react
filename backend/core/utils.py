@@ -1,22 +1,7 @@
-import base64
-
-from rest_framework.serializers import ImageField, ValidationError
-
-from django.core.files.base import ContentFile
 from django.db.models import QuerySet
 
 from recipes.models import Ingredient, IngredientRecipe, Recipe
 from users.models import User
-
-
-class Base64ToImageField(ImageField):
-    """Вспомогательный класс для работы с изображениями."""
-
-    def to_internal_value(self, data):
-        format, img = data.split(";base64,")
-        ext = format.split("/")[-1]
-        data = ContentFile(base64.b64decode(img), name="temp." + ext)
-        return super().to_internal_value(data)
 
 
 def create_ingredients(ingredients: list[dict[int]], recipe: Recipe) -> None:
@@ -26,14 +11,7 @@ def create_ingredients(ingredients: list[dict[int]], recipe: Recipe) -> None:
     """
     ingredients_list = []
     for ingredient in ingredients:
-        try:
-            current_ingredient = Ingredient.objects.get(
-                id=ingredient.get("id")
-            )
-        except Ingredient.DoesNotExist:
-            raise ValidationError(
-                {"ingredients": "Такой ингредиент не существует."}
-            )
+        current_ingredient = Ingredient.objects.get(id=ingredient.get("id"))
         amount = ingredient.get("amount")
         ingredients_list.append(
             IngredientRecipe(
@@ -43,7 +21,9 @@ def create_ingredients(ingredients: list[dict[int]], recipe: Recipe) -> None:
     IngredientRecipe.objects.bulk_create(ingredients_list)
 
 
-def generate_txt(user: User, shopping_cart_queryset: QuerySet) -> str:
+def generate_text_of_shopping_cart(
+    user: User, shopping_cart_queryset: QuerySet
+) -> str:
     """Вспомогательная функция для генерации TXT файла."""
     shopping_cart = dict()
     for row_of_shopping_cart in shopping_cart_queryset:

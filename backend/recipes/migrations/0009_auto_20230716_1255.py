@@ -42,7 +42,8 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="favorite",
             constraint=models.UniqueConstraint(
-                fields=("user", "recipe"), name="unique_favorite_user_recipe"
+                fields=("user", "recipe"),
+                name="unique_favorite_user_recipe",
             ),
         ),
         migrations.AddField(

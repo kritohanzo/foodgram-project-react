@@ -1,10 +1,24 @@
-from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer
+import base64
 
-from core.utils import Base64ToImageField, create_ingredients
+from rest_framework import serializers
+from rest_framework.serializers import ImageField, ModelSerializer
+
+from django.core.files.base import ContentFile
+
+from core.utils import create_ingredients
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                             ShoppingCart, Tag,)
 from users.models import Subscribe, User
+
+
+class Base64ToImageField(ImageField):
+    """Вспомогательный класс для работы с изображениями."""
+
+    def to_internal_value(self, data):
+        format, img = data.split(";base64,")
+        ext = format.split("/")[-1]
+        data = ContentFile(base64.b64decode(img), name="temp." + ext)
+        return super().to_internal_value(data)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -188,7 +202,12 @@ class CreateUpdateRecipeSerializer(ModelSerializer):
         ingredients = validated_data.pop("ingredients")
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        create_ingredients(ingredients, recipe)
+        try:
+            create_ingredients(ingredients, recipe)
+        except Ingredient.DoesNotExist:
+            raise serializers.ValidationError(
+                {"ingredients": "Такой ингредиент не существует."}
+            )
         return recipe
 
     def update(self, instance, validated_data):
@@ -198,7 +217,12 @@ class CreateUpdateRecipeSerializer(ModelSerializer):
         instance.tags.set(tags)
         IngredientRecipe.objects.filter(recipe=instance).delete()
         super().update(instance, validated_data)
-        create_ingredients(ingredients, instance)
+        try:
+            create_ingredients(ingredients, instance)
+        except Ingredient.DoesNotExist:
+            raise serializers.ValidationError(
+                {"ingredients": "Такой ингредиент не существует."}
+            )
         return instance
 
     def to_representation(self, instance):
@@ -218,7 +242,7 @@ class SubscribeSerializer(ModelSerializer):
     last_name = serializers.ReadOnlyField(source="author.last_name")
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+    recipes_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Subscribe
@@ -247,6 +271,3 @@ class SubscribeSerializer(ModelSerializer):
         return ShortRecipeSerializer(
             Recipe.objects.filter(author=obj.author), many=True
         ).data
-
-    def get_recipes_count(self, obj):
-        return len(self.get_recipes(obj))

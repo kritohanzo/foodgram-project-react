@@ -60,20 +60,25 @@ class Recipe(models.Model):
     image = models.ImageField(verbose_name="Картинка", max_length=255)
     text = models.TextField(verbose_name="Описание")
     ingredients = models.ManyToManyField(
-        Ingredient, through="IngredientRecipe", verbose_name="Ингредиенты"
+        Ingredient,
+        through="IngredientRecipe",
+        verbose_name="Ингредиенты",
+        related_name="recipes",
     )
     tags = models.ManyToManyField(
-        Tag, through="TagRecipe", verbose_name="Теги"
+        Tag,
+        through="TagRecipe",
+        verbose_name="Теги",
+        related_name="recipes",
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         verbose_name="Время приготовления",
         validators=[
             MinValueValidator(1, "Время приготовления должно быть больше 0")
         ],
     )
     pub_date = models.DateTimeField(
-        verbose_name="Дата публикации",
-        auto_now_add=True
+        verbose_name="Дата публикации", auto_now_add=True
     )
 
     class Meta:
@@ -100,7 +105,7 @@ class IngredientRecipe(models.Model):
         on_delete=models.CASCADE,
         related_name="ingredients_recipes",
     )
-    amount = models.IntegerField(
+    amount = models.PositiveSmallIntegerField(
         verbose_name="Количество",
         validators=[MinValueValidator(1, "Количество должно быть больше 0")],
     )
@@ -115,6 +120,10 @@ class IngredientRecipe(models.Model):
                 name="unique_recipe_ingredient",
             )
         ]
+
+    def __str__(self):
+        return (f"Рецепт {self.recipe} содержит "
+                f"{self.ingredient} в количестве {self.amount}")
 
 
 class TagRecipe(models.Model):
@@ -143,6 +152,9 @@ class TagRecipe(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f"Рецепту {self.recipe} принадлежит тег {self.tag}"
+
 
 class Favorite(models.Model):
     """Модель связи пользователя и рецепта для реализации списка избранного."""
@@ -166,9 +178,14 @@ class Favorite(models.Model):
         ordering = ("id",)
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "recipe"], name="unique_favorite_user_recipe"
+                fields=["user", "recipe"],
+                name="unique_favorite_user_recipe",
             )
         ]
+
+    def __str__(self):
+        return (f"Пользователь {self.user} "
+                f"добавил рецепт {self.recipe} в избранное")
 
 
 class ShoppingCart(models.Model):
@@ -197,3 +214,7 @@ class ShoppingCart(models.Model):
                 name="unique_shoppingcart_user_recipe",
             )
         ]
+
+    def __str__(self):
+        return (f"Пользователь {self.user} добавил "
+                f"рецепт {self.recipe} в список покупок")

@@ -8,6 +8,7 @@ admin.site.site_header = "Администрирование Foodgram"
 EMPTY_VALUE_DISPLAY = "—"
 
 
+@admin.register(Tag)
 class TagConfig(admin.ModelAdmin):
     list_display = ["id", "name", "color", "slug"]
     list_editable = ["name", "color", "slug"]
@@ -15,6 +16,7 @@ class TagConfig(admin.ModelAdmin):
     empty_value_display = EMPTY_VALUE_DISPLAY
 
 
+@admin.register(Ingredient)
 class IngredientConfig(admin.ModelAdmin):
     list_display = ["id", "name", "measurement_unit"]
     list_editable = ["name", "measurement_unit"]
@@ -26,6 +28,7 @@ class IngredientRecipeInline(admin.TabularInline):
     model = IngredientRecipe
 
 
+@admin.register(Recipe)
 class RecipeConfig(admin.ModelAdmin):
     inlines = [IngredientRecipeInline]
     list_display = [
@@ -45,6 +48,12 @@ class RecipeConfig(admin.ModelAdmin):
     list_filter = ["name", "author", "tags"]
     empty_value_display = EMPTY_VALUE_DISPLAY
 
+    def get_queryset(self, request):
+        queryset = Recipe.objects.select_related("author").prefetch_related(
+            "ingredients", "tags"
+        )
+        return queryset
+
     def get_ingredients(self, obj):
         return [ingredient.name for ingredient in obj.ingredients.all()]
 
@@ -59,27 +68,34 @@ class RecipeConfig(admin.ModelAdmin):
     count_favorites.short_description = "В избранном"
 
 
+@admin.register(TagRecipe)
 class TagRecipeConfig(admin.ModelAdmin):
     list_display = ["id", "tag", "recipe"]
     search_fields = ["tag__name", "recipe__name"]
     empty_value_display = EMPTY_VALUE_DISPLAY
 
+    def get_queryset(self, request):
+        queryset = Recipe.objects.select_related("tag", "recipe")
+        return queryset
 
+
+@admin.register(IngredientRecipe)
 class IngredientRecipeConfig(admin.ModelAdmin):
     list_display = ["id", "ingredient", "recipe"]
     search_fields = ["ingredient__name", "recipe__name"]
     empty_value_display = EMPTY_VALUE_DISPLAY
 
+    def get_queryset(self, request):
+        queryset = Recipe.objects.select_related("ingredient", "recipe")
+        return queryset
 
+
+@admin.register(Favorite)
 class FavoriteConfig(admin.ModelAdmin):
     list_display = ["id", "user", "recipe"]
     search_fields = ["user__username", "recipe__name"]
     empty_value_display = EMPTY_VALUE_DISPLAY
 
-
-admin.site.register(Tag, TagConfig)
-admin.site.register(Ingredient, IngredientConfig)
-admin.site.register(Recipe, RecipeConfig)
-admin.site.register(TagRecipe, TagRecipeConfig)
-admin.site.register(IngredientRecipe, IngredientRecipeConfig)
-admin.site.register(Favorite, FavoriteConfig)
+    def get_queryset(self, request):
+        queryset = Recipe.objects.select_related("user", "recipe")
+        return queryset

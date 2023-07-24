@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY", "^2o&5z5tyt-*_k4yyt15*(8&0b!c&^j(0!d=%bneo!1f#yg1qw"
 )
 
-DEBUG = os.getenv("DJANGO_DEBUG", True)
+DEBUG = bool(os.getenv("DJANGO_DEBUG", "False"))
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(
     ","
