@@ -94,7 +94,7 @@ class IngredientRecipeConfig(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = (
-            super(IngredientRecipe, self)
+            super(IngredientRecipeConfig, self)
             .get_queryset(request)
             .select_related("ingredient", "recipe")
         )
