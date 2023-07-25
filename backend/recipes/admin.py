@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from core.filters import AuthorFilter, NameFilter
+from core.filters import AuthorFilter, IngredientsFilter, TagsFilter
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                             Tag, TagRecipe,)
 
@@ -34,9 +34,9 @@ class RecipeConfig(admin.ModelAdmin):
     inlines = [IngredientRecipeInline]
     list_display = [
         "id",
-        "author",
         "name",
         "text",
+        "author",
     ]
     list_display_links = ["id", "name"]
     readonly_fields = ["pub_date", "count_favorites"]
@@ -46,8 +46,7 @@ class RecipeConfig(admin.ModelAdmin):
         "tags__name",
         "ingredients__name",
     ]
-    list_filter = [NameFilter, AuthorFilter]
-
+    list_filter = [AuthorFilter, TagsFilter, IngredientsFilter]
     empty_value_display = EMPTY_VALUE_DISPLAY
 
     def get_queryset(self, request):
