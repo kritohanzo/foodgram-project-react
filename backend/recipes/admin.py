@@ -49,7 +49,7 @@ class RecipeConfig(admin.ModelAdmin):
     empty_value_display = EMPTY_VALUE_DISPLAY
 
     def get_queryset(self, request):
-        queryset = Recipe.objects.select_related("author").prefetch_related(
+        queryset = super().get_queryset().select_related("author").prefetch_related(
             "ingredients", "tags"
         )
         return queryset
