@@ -78,7 +78,11 @@ class TagRecipeConfig(admin.ModelAdmin):
     empty_value_display = EMPTY_VALUE_DISPLAY
 
     def get_queryset(self, request):
-        queryset = Recipe.objects.select_related("tag", "recipe")
+        queryset = (
+            super(TagRecipeConfig, self)
+            .get_queryset(request)
+            .select_related("tag", "recipe")
+        )
         return queryset
 
 
@@ -89,7 +93,11 @@ class IngredientRecipeConfig(admin.ModelAdmin):
     empty_value_display = EMPTY_VALUE_DISPLAY
 
     def get_queryset(self, request):
-        queryset = Recipe.objects.select_related("ingredient", "recipe")
+        queryset = (
+            super(IngredientRecipe, self)
+            .get_queryset(request)
+            .select_related("ingredient", "recipe")
+        )
         return queryset
 
 
@@ -100,5 +108,9 @@ class FavoriteConfig(admin.ModelAdmin):
     empty_value_display = EMPTY_VALUE_DISPLAY
 
     def get_queryset(self, request):
-        queryset = Recipe.objects.select_related("user", "recipe")
+        queryset = (
+            super(FavoriteConfig, self)
+            .get_queryset(request)
+            .select_related("user", "recipe")
+        )
         return queryset
