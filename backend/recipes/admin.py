@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from core.filters import AuthorFilter, NameFilter, TagsFilter
+from core.filters import AuthorFilter, NameFilter
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                             Tag, TagRecipe,)
 
