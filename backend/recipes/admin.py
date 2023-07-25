@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from core.filters import AuthorFilter, NameFilter, TagsFilter
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                             Tag, TagRecipe,)
 
@@ -11,7 +12,7 @@ EMPTY_VALUE_DISPLAY = "—"
 @admin.register(Tag)
 class TagConfig(admin.ModelAdmin):
     list_display = ["id", "name", "color", "slug"]
-    list_editable = ["name", "color", "slug"]
+    list_display_links = ["id", "name"]
     search_fields = ["name"]
     empty_value_display = EMPTY_VALUE_DISPLAY
 
@@ -19,7 +20,7 @@ class TagConfig(admin.ModelAdmin):
 @admin.register(Ingredient)
 class IngredientConfig(admin.ModelAdmin):
     list_display = ["id", "name", "measurement_unit"]
-    list_editable = ["name", "measurement_unit"]
+    list_display_links = ["id", "name"]
     search_fields = ["name"]
     empty_value_display = EMPTY_VALUE_DISPLAY
 
@@ -37,15 +38,16 @@ class RecipeConfig(admin.ModelAdmin):
         "name",
         "text",
     ]
+    list_display_links = ["id", "name"]
     readonly_fields = ["pub_date", "count_favorites"]
-    list_editable = ["name", "text"]
     search_fields = [
         "name",
         "author__username",
         "tags__name",
         "ingredients__name",
     ]
-    list_filter = ["name", "author", "tags"]
+    list_filter = [NameFilter, AuthorFilter, TagsFilter]
+
     empty_value_display = EMPTY_VALUE_DISPLAY
 
     def get_queryset(self, request):

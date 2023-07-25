@@ -17,13 +17,7 @@ class UserConfig(admin.ModelAdmin):
         "last_name",
         "is_staff",
     ]
-    list_editable = [
-        "username",
-        "email",
-        "first_name",
-        "last_name",
-        "is_staff",
-    ]
+    list_display_links = ["id", "username", "email"]
     search_fields = ["username", "email"]
     empty_value_display = EMPTY_VALUE_DISPLAY
 
@@ -35,5 +29,9 @@ class SubscribeConfig(admin.ModelAdmin):
     empty_value_display = EMPTY_VALUE_DISPLAY
 
     def get_queryset(self, request):
-        queryset = Subscribe.objects.select_related('author', 'subscriber')
+        queryset = (
+            super(SubscribeConfig, self)
+            .get_queryset(request)
+            .select_related('author', 'subscriber')
+        )
         return queryset

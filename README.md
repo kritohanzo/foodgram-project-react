@@ -1,7 +1,7 @@
 # Foodgram — ваш помощник в мире рецептов!
 
 > для ревьювера:\
-> Привет, прошлое ревью прошло во время того, как я переделывал воркфлоу и волюмы, поэтому никаких данных не было, я вроде отменил ревью, но оно почему-то всё равно осталось =)
+> Привет =)
 > * Deploy server IP: 158.160.73.82
 > * Deploy server domain name: [foodgram.kritohanzo.ru](https://foodgram.kritohanzo.ru/)
 > * Admin email: admin@mail.ru
