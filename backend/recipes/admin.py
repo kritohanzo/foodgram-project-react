@@ -46,7 +46,7 @@ class RecipeConfig(admin.ModelAdmin):
         "tags__name",
         "ingredients__name",
     ]
-    list_filter = [NameFilter, AuthorFilter, TagsFilter]
+    list_filter = [NameFilter, AuthorFilter]
 
     empty_value_display = EMPTY_VALUE_DISPLAY
 
