@@ -4,6 +4,8 @@ volumes:
   foodgram_pg_data:
   foodgram_static:
   foodgram_media:
+  foodgram_data:
+  foodgram_docs:
 
 services:
   db:
@@ -19,7 +21,7 @@ services:
     volumes:
       - foodgram_static:/backend_static/
       - foodgram_media:/app/media
-      - ./data:/app/data
+      - foodgram_data:/app/data
   frontend:
     image: kritohanzo/foodgram_frontend
     env_file: .env
@@ -33,4 +35,4 @@ services:
     volumes:
       - foodgram_static:/usr/share/nginx/html/
       - foodgram_media:/media
-      - ./docs/:/usr/share/nginx/html/api/docs/
+      - foodgram_docs:/usr/share/nginx/html/api/docs/
