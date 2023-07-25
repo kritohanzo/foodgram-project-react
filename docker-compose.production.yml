@@ -4,7 +4,6 @@ volumes:
   foodgram_pg_data:
   foodgram_static:
   foodgram_media:
-  foodgram_data:
 
 services:
   db:
