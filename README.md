@@ -1,12 +1,5 @@
 # Foodgram — ваш помощник в мире рецептов!
 
-> для ревьювера:\
-> Привет =)
-> * Deploy server IP: 158.160.73.82
-> * Deploy server domain name: [foodgram.kritohanzo.ru](https://foodgram.kritohanzo.ru/)
-> * Admin email: admin@mail.ru
-> * Admin password: arbuz123
-
 Проект нацелен на людей, которые обожают готовить и делиться своим творчеством в интернете.\
 На [сайте](https://foodgram.kritohanzo.ru/) нашего проект любой желающий может оставить рецепт своего любимого блюда, либо же подсмотреть чужой рецепт какого-то вкусного блюда.
 
